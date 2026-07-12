@@ -1,5 +1,6 @@
 import * as AuthSession from "expo-auth-session";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import {
@@ -30,7 +31,11 @@ export default function LoginScreen() {
 
     const [cameraPermission, requestCameraPermission] = useCameraPermissions();
 
-    const redirectUri = AuthSession.makeRedirectUri({ scheme: "expoclient" });
+    const redirectUri = AuthSession.makeRedirectUri({
+        scheme: "expoclient",
+        path: "auth-callback",
+    });
+    console.log("redirectUri:", redirectUri);
     const clientId = "https://benjiramm.github.io/expo-client/";
 
     async function handleConnect(urlOverride?: string) {
@@ -49,20 +54,27 @@ export default function LoginScreen() {
                 `?response_type=code` +
                 `&client_id=${encodeURIComponent(clientId)}` +
                 `&redirect_uri=${encodeURIComponent(redirectUri)}`;
-            console.log("authUrl", authUrl);
-            const result = await AuthSession.startAsync({
-                authUrl,
-                returnUrl: redirectUri,
-            });
 
-            if (result.type === "success" && result.params.code) {
-                await login(url, result.params.code, redirectUri, clientId);
+            console.log("authUrl:", authUrl);
+            const result = await WebBrowser.openAuthSessionAsync(
+                authUrl,
+                redirectUri,
+            );
+
+            console.log("result:", result);
+            if (result.type === "success") {
+                const parsed = Linking.parse(result.url);
+                const code = parsed.queryParams?.code as string | undefined;
+                if (code) {
+                    await login(url, code, redirectUri, clientId);
+                } else {
+                    setError("Authentication failed. Please try again.");
+                }
             } else if (result.type === "cancel" || result.type === "dismiss") {
                 // user closed the browser, do nothing
-            } else {
-                setError("Authentication failed. Please try again.");
             }
-        } catch {
+        } catch (e) {
+            console.error(e);
             setError(
                 "Could not connect to Home Assistant. Check the URL and try again.",
             );
