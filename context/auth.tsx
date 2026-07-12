@@ -6,7 +6,7 @@ const STORE_KEY_ACCESS_TOKEN = 'ha_access_token';
 const STORE_KEY_REFRESH_TOKEN = 'ha_refresh_token';
 const STORE_KEY_EXPIRES_AT = 'ha_expires_at';
 
-export const HA_CLIENT_ID = 'https://lights-app.dev/';
+export const HA_CLIENT_ID = 'https://benjiramm.github.io/expo-client/';
 
 export type AuthState =
   | { status: 'loading' }

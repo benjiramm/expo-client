@@ -31,7 +31,7 @@ export default function LoginScreen() {
     const [cameraPermission, requestCameraPermission] = useCameraPermissions();
 
     const redirectUri = AuthSession.makeRedirectUri({ scheme: "expoclient" });
-    const clientId = "https://lights-app.dev/";
+    const clientId = "https://benjiramm.github.io/expo-client/";
 
     async function handleConnect(urlOverride?: string) {
         const url = (urlOverride ?? instanceUrl).trim().replace(/\/$/, "");
