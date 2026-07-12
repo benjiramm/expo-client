@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Button, Platform, StyleSheet, Switch } from 'react-native';
 
 import { Collapsible } from '@/components/ui/collapsible';
 import { ExternalLink } from '@/components/external-link';
@@ -8,8 +8,13 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
+import { useState } from 'react';
+import Slider from '@react-native-community/slider';
 
 export default function TabTwoScreen() {
+    const [isSwitchOn, setIsSwitchOn] = useState(false);
+    const [sliderValue, setSliderValue] = useState(0);
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -29,7 +34,10 @@ export default function TabTwoScreen() {
           }}>
           Explore
         </ThemedText>
-      </ThemedView>
+          </ThemedView>
+          <Button title='click me' />
+          <Switch onValueChange={() => { setIsSwitchOn(!isSwitchOn); }} value={isSwitchOn} />
+          <Slider value={sliderValue} onValueChange={(value) => { setSliderValue(value); }} />
       <ThemedText>This app includes example code to help you get started.</ThemedText>
       <Collapsible title="File-based routing">
         <ThemedText>

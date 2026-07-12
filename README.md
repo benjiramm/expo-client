@@ -1,50 +1,30 @@
-# Welcome to your Expo app 👋
+# Lights
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native (Expo) shell for Home Assistant that lets you view and organize your smart home entities from a clean, mobile-first interface.
 
-## Get started
+## What it does
 
-1. Install dependencies
+- **Browse entities** — read and interact with your Home Assistant entities (lights, switches, sensors, etc.)
+- **Organize your layout** — arrange entities into a custom layout that makes sense for your home
+- **Per-user configuration** — layout and preferences are stored directly in your Home Assistant instance, so your setup follows you across devices
+- **Home Assistant OAuth login** — authentication is handled via Home Assistant's built-in OAuth flow, no separate account needed
 
-   ```bash
-   npm install
-   ```
+## How it works
 
-2. Start the app
+Login is done through Home Assistant's OAuth2 authorization flow. Once authenticated, the app communicates with your Home Assistant instance to fetch your entities and persist any layout configuration you create. Everything is tied to your own HA instance — no third-party cloud involved.
 
-   ```bash
-   npx expo start
-   ```
+## Tech stack
 
-In the output, you'll find options to open the app in a
+- [Expo](https://expo.dev) v54 (React Native)
+- Expo Router for file-based navigation
+- TypeScript
+- React Native Reanimated for animations
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Getting started
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Open the app in [Expo Go](https://expo.dev/go) or a simulator, then log in with your Home Assistant instance URL and credentials.
