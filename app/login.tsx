@@ -35,7 +35,6 @@ export default function LoginScreen() {
         scheme: "expoclient",
         path: "auth-callback",
     });
-    console.log("redirectUri:", redirectUri);
     const clientId = "https://benjiramm.github.io/expo-client/";
 
     async function handleConnect(urlOverride?: string) {
@@ -55,13 +54,12 @@ export default function LoginScreen() {
                 `&client_id=${encodeURIComponent(clientId)}` +
                 `&redirect_uri=${encodeURIComponent(redirectUri)}`;
 
-            console.log("authUrl:", authUrl);
             const result = await WebBrowser.openAuthSessionAsync(
                 authUrl,
                 redirectUri,
             );
 
-            console.log("result:", result);
+            console.log("redirectUri", redirectUri);
             if (result.type === "success") {
                 const parsed = Linking.parse(result.url);
                 const code = parsed.queryParams?.code as string | undefined;

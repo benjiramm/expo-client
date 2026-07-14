@@ -1,12 +1,15 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Fonts } from "@/constants/theme";
+import { useAuth } from "@/context/auth";
 
 export default function TabTwoScreen() {
+    const { auth, logout } = useAuth();
+
     return (
         <ParallaxScrollView
             headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
@@ -30,7 +33,28 @@ export default function TabTwoScreen() {
                 </ThemedText>
             </ThemedView>
 
-            <ThemedText>Manage your settings here.</ThemedText>
+            {auth.status === "authenticated" && (
+                <ThemedView style={styles.section}>
+                    <ThemedText type="subtitle">Connected to</ThemedText>
+                    <ThemedText selectable>{auth.instanceUrl}</ThemedText>
+
+                    <ThemedText type="subtitle" style={{ marginTop: 16 }}>
+                        Access Token
+                    </ThemedText>
+                    <ThemedText selectable style={styles.token}>
+                        {auth.accessToken}
+                    </ThemedText>
+
+                    <TouchableOpacity
+                        style={styles.logoutButton}
+                        onPress={logout}
+                    >
+                        <ThemedText style={styles.logoutText}>
+                            Disconnect
+                        </ThemedText>
+                    </TouchableOpacity>
+                </ThemedView>
+            )}
         </ParallaxScrollView>
     );
 }
@@ -45,5 +69,25 @@ const styles = StyleSheet.create({
     titleContainer: {
         flexDirection: "row",
         gap: 8,
+    },
+    section: {
+        gap: 4,
+    },
+    token: {
+        fontFamily: "monospace",
+        fontSize: 12,
+        opacity: 0.6,
+    },
+    logoutButton: {
+        marginTop: 24,
+        backgroundColor: "#e53e3e",
+        paddingVertical: 14,
+        borderRadius: 10,
+        alignItems: "center",
+    },
+    logoutText: {
+        color: "#fff",
+        fontWeight: "600",
+        fontSize: 16,
     },
 });
