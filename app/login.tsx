@@ -37,6 +37,9 @@ export default function LoginScreen() {
     });
     const clientId = "https://benjiramm.github.io/expo-client/";
 
+    console.log("[OAuth Debug] redirectUri:", redirectUri);
+    console.log("[OAuth Debug] Expected:   ", "expoclient://auth-callback");
+
     async function handleConnect(urlOverride?: string) {
         const url = (urlOverride ?? instanceUrl).trim().replace(/\/$/, "");
         if (!url) {
