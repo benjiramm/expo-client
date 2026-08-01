@@ -6,8 +6,7 @@ import {
 } from "home-assistant-js-websocket";
 import { useEffect, useRef, useState } from "react";
 
-import { HA_CLIENT_ID, useAuth } from "@/context/auth";
-import * as SecureStore from "expo-secure-store";
+import { HA_CLIENT_ID, useAuth, storeGet, storeSet } from "@/context/auth";
 
 /**
  * Creates a Home Assistant WebSocket connection using the existing OAuth tokens.
@@ -37,9 +36,9 @@ export function useHAConnection() {
 
             try {
                 const refreshToken =
-                    await SecureStore.getItemAsync("ha_refresh_token");
+                    await storeGet("ha_refresh_token");
                 const expiresAt =
-                    await SecureStore.getItemAsync("ha_expires_at");
+                    await storeGet("ha_expires_at");
 
                 if (!refreshToken) {
                     setError("No refresh token available");
@@ -70,11 +69,11 @@ export function useHAConnection() {
                 const saveTokens = async (data: AuthData | null) => {
                     if (!data) return;
                     await Promise.all([
-                        SecureStore.setItemAsync(
+                        storeSet(
                             "ha_access_token",
                             data.access_token,
                         ),
-                        SecureStore.setItemAsync(
+                        storeSet(
                             "ha_expires_at",
                             String(Date.now() + data.expires_in * 1000),
                         ),

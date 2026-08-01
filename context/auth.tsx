@@ -1,10 +1,35 @@
 import * as SecureStore from 'expo-secure-store';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 
 const STORE_KEY_INSTANCE_URL = 'ha_instance_url';
 const STORE_KEY_ACCESS_TOKEN = 'ha_access_token';
 const STORE_KEY_REFRESH_TOKEN = 'ha_refresh_token';
 const STORE_KEY_EXPIRES_AT = 'ha_expires_at';
+
+// SecureStore doesn't work on web, fall back to localStorage
+export async function storeSet(key: string, value: string): Promise<void> {
+  if (Platform.OS === 'web') {
+    localStorage.setItem(key, value);
+  } else {
+    await SecureStore.setItemAsync(key, value);
+  }
+}
+
+export async function storeGet(key: string): Promise<string | null> {
+  if (Platform.OS === 'web') {
+    return localStorage.getItem(key);
+  }
+  return SecureStore.getItemAsync(key);
+}
+
+async function storeDelete(key: string): Promise<void> {
+  if (Platform.OS === 'web') {
+    localStorage.removeItem(key);
+  } else {
+    await SecureStore.deleteItemAsync(key);
+  }
+}
 
 export const HA_CLIENT_ID = 'https://benjiramm.github.io/expo-client/';
 
@@ -36,10 +61,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function restoreSession() {
     try {
       const [instanceUrl, accessToken, refreshTokenValue, expiresAt] = await Promise.all([
-        SecureStore.getItemAsync(STORE_KEY_INSTANCE_URL),
-        SecureStore.getItemAsync(STORE_KEY_ACCESS_TOKEN),
-        SecureStore.getItemAsync(STORE_KEY_REFRESH_TOKEN),
-        SecureStore.getItemAsync(STORE_KEY_EXPIRES_AT),
+        storeGet(STORE_KEY_INSTANCE_URL),
+        storeGet(STORE_KEY_ACCESS_TOKEN),
+        storeGet(STORE_KEY_REFRESH_TOKEN),
+        storeGet(STORE_KEY_EXPIRES_AT),
       ]);
 
       if (!instanceUrl || !accessToken || !refreshTokenValue) {
@@ -86,10 +111,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const expiresAt = Date.now() + data.expires_in * 1000;
 
     await Promise.all([
-      SecureStore.setItemAsync(STORE_KEY_INSTANCE_URL, url),
-      SecureStore.setItemAsync(STORE_KEY_ACCESS_TOKEN, data.access_token),
-      SecureStore.setItemAsync(STORE_KEY_REFRESH_TOKEN, data.refresh_token),
-      SecureStore.setItemAsync(STORE_KEY_EXPIRES_AT, String(expiresAt)),
+      storeSet(STORE_KEY_INSTANCE_URL, url),
+      storeSet(STORE_KEY_ACCESS_TOKEN, data.access_token),
+      storeSet(STORE_KEY_REFRESH_TOKEN, data.refresh_token),
+      storeSet(STORE_KEY_EXPIRES_AT, String(expiresAt)),
     ]);
 
     setAuth({ status: 'authenticated', instanceUrl: url, accessToken: data.access_token });
@@ -97,18 +122,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function logout() {
     await Promise.all([
-      SecureStore.deleteItemAsync(STORE_KEY_INSTANCE_URL),
-      SecureStore.deleteItemAsync(STORE_KEY_ACCESS_TOKEN),
-      SecureStore.deleteItemAsync(STORE_KEY_REFRESH_TOKEN),
-      SecureStore.deleteItemAsync(STORE_KEY_EXPIRES_AT),
+      storeDelete(STORE_KEY_INSTANCE_URL),
+      storeDelete(STORE_KEY_ACCESS_TOKEN),
+      storeDelete(STORE_KEY_REFRESH_TOKEN),
+      storeDelete(STORE_KEY_EXPIRES_AT),
     ]);
     setAuth({ status: 'unauthenticated' });
   }
 
   async function refreshToken(): Promise<string | null> {
     const [instanceUrl, storedRefreshToken] = await Promise.all([
-      SecureStore.getItemAsync(STORE_KEY_INSTANCE_URL),
-      SecureStore.getItemAsync(STORE_KEY_REFRESH_TOKEN),
+      storeGet(STORE_KEY_INSTANCE_URL),
+      storeGet(STORE_KEY_REFRESH_TOKEN),
     ]);
 
     if (!instanceUrl || !storedRefreshToken) return null;
@@ -153,10 +178,10 @@ async function exchangeRefreshToken(instanceUrl: string, token: string): Promise
     const expiresAt = Date.now() + data.expires_in * 1000;
 
     await Promise.all([
-      SecureStore.setItemAsync(STORE_KEY_ACCESS_TOKEN, data.access_token),
-      SecureStore.setItemAsync(STORE_KEY_EXPIRES_AT, String(expiresAt)),
+      storeSet(STORE_KEY_ACCESS_TOKEN, data.access_token),
+      storeSet(STORE_KEY_EXPIRES_AT, String(expiresAt)),
       data.refresh_token
-        ? SecureStore.setItemAsync(STORE_KEY_REFRESH_TOKEN, data.refresh_token)
+        ? storeSet(STORE_KEY_REFRESH_TOKEN, data.refresh_token)
         : Promise.resolve(),
     ]);
 
